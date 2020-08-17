@@ -4,7 +4,7 @@ package example3
 Example of how to create an Package in Golang
 */
 
-func isPrime(n int) bool {
+func IsPrime(n int) bool {
 	if n <= 1 {
 		return false
 	} else if n <= 3 {
