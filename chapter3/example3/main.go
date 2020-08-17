@@ -1,4 +1,4 @@
-package main
+package example3
 
 /*
 Example of how to create an Package in Golang
@@ -21,10 +21,4 @@ func isPrime(n int) bool {
 		i += 6
 	}
 	return true
-}
-
-func main() {
-	for i := 0; i < 100; i++ {
-		println(i, ":", isPrime(i))
-	}
 }
