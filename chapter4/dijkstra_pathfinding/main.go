@@ -69,7 +69,7 @@ func (g *Graph) Dijkstra(source string) (map[string]uint, map[string]string) {
 	for u := source; u != ""; u = getClosestNonVisitedNode(dist, visited) {
 		uDist := dist[u]
 		for _, link := range g.nodes[u].links {
-			if _, ok := visited[link.from.Name]; ok {
+			if _, ok := visited[link.to.Name]; ok {
 				continue
 			}
 			alt := uDist + link.cost
