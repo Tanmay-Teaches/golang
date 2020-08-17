@@ -22,19 +22,29 @@ func start(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	prefix := []byte(params["prefix"][0])
 	difficulty, _ := strconv.ParseInt(params["difficulty"][0], 10, 32)
+	CloseChan = make(chan int, 1)
 	if completion, ok := params["completionEndpoint"]; ok {
 		completion := completion[0]
-		CloseChan = make(chan int, 1)
 		go POWWithCallBack(prefix, int(difficulty), completion)
 	} else {
 		s := POW(prefix, int(difficulty))
-		w.WriteHeader(200)
+		if s == "" {
+			w.WriteHeader(http.StatusBadRequest)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
 		w.Write([]byte(s))
 	}
 }
 
 func cancel(w http.ResponseWriter, r *http.Request) {
-	CloseChan <- 1
+	select {
+	case CloseChan <- 1:
+		w.WriteHeader(200)
+	case <-time.After(time.Second):
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("unable to cancel last request"))
+	}
 }
 
 func Router() *mux.Router {
@@ -65,8 +75,14 @@ func POW(prefix []byte, difficulty int) string {
 	for i := 0; i < numberOfGoRo; i++ {
 		runPOWInstance(prefix, 3, solutionChan, CloseChan, difficulty)
 	}
-	solution := <-solutionChan
-	return string(solution)
+	select {
+	case solution := <-solutionChan:
+		return string(solution)
+	case _ = <-CloseChan:
+		return ""
+	}
+
+	return ""
 }
 
 //Create a small poof of work instance with x+1 goroutine.
@@ -118,6 +134,7 @@ func runPOWInstance(prefix []byte, numberOfHasher int, solutionChannel chan []by
 						hash = Hash(random, numberOfBits)
 						if hash {
 							solutionChannel <- random
+							closeChan <- 1
 							return
 						}
 					}

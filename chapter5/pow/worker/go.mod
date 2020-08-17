@@ -1,4 +1,4 @@
-module worker
+module github.com/Tanmay-Teaches/golang/chapter5/pow/worker
 
 go 1.14
 
