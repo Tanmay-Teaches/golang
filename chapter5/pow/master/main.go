@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 
@@ -23,7 +22,8 @@ func start(w http.ResponseWriter, r *http.Request) {
 	for _, worker := range workers {
 		_, _ = http.Get(worker + "/start?" + workerParams)
 	}
-	fmt.Fprintf(w, <-solutionChan)
+	solution := <-solutionChan
+	w.Write([]byte(solution))
 }
 
 func solutionFound(w http.ResponseWriter, r *http.Request) {

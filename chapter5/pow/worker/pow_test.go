@@ -28,13 +28,13 @@ func testHash(t *testing.T, prefix string, difficulty int) {
 }
 
 func TestDifficulty10(t *testing.T) {
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= 100000; i++ {
 		testHash(t, "test", 10)
 	}
 }
 
 func TestDifficulty15(t *testing.T) {
-	for i := 0; i <= 100; i++ {
+	for i := 0; i <= 10000; i++ {
 		testHash(t, "test", 15)
 	}
 }

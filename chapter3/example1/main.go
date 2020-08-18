@@ -44,8 +44,10 @@ func main() {
 }
 
 func SearchByName(name string) (*MovieInfo, error) {
-	name = url.QueryEscape(name)
-	siteURL := "http://www.omdbapi.com/?apikey=" + APIKEY + "&t=" + name
+	parms := url.Values{}
+	parms.Set("apikey", APIKEY)
+	parms.Set("t", name)
+	siteURL := "http://www.omdbapi.com/?apikey=" + parms.Encode()
 	body, err := sendGetRequest(siteURL)
 	if err != nil {
 		return nil, errors.New(err.Error() + "\nBody:" + body)
@@ -54,8 +56,10 @@ func SearchByName(name string) (*MovieInfo, error) {
 	return mi, json.Unmarshal([]byte(body), mi)
 }
 func SearchById(id string) (*MovieInfo, error) {
-	id = url.QueryEscape(id)
-	siteURL := "http://www.omdbapi.com/?apikey=" + APIKEY + "&i=" + id
+	parms := url.Values{}
+	parms.Set("apikey", APIKEY)
+	parms.Set("i", id)
+	siteURL := "http://www.omdbapi.com/?apikey=" + parms.Encode()
 	body, err := sendGetRequest(siteURL)
 	if err != nil {
 		return nil, errors.New(err.Error() + "\nBody:" + body)

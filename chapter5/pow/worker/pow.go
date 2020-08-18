@@ -77,12 +77,11 @@ func POW(prefix []byte, difficulty int) string {
 	}
 	select {
 	case solution := <-solutionChan:
+		CloseChan <- 1
 		return string(solution)
 	case _ = <-CloseChan:
 		return ""
 	}
-
-	return ""
 }
 
 //Create a small poof of work instance with x+1 goroutine.
@@ -134,7 +133,6 @@ func runPOWInstance(prefix []byte, numberOfHasher int, solutionChannel chan []by
 						hash = Hash(random, numberOfBits)
 						if hash {
 							solutionChannel <- random
-							closeChan <- 1
 							return
 						}
 					}
