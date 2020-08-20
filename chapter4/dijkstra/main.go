@@ -102,12 +102,12 @@ func main() {
 
 func DijkstraString(dist map[string]uint, prev map[string]string) string {
 	buf := &bytes.Buffer{}
-	writer := tabwriter.NewWriter(buf, 10, 10, 5, ' ', 0)
-	writer.Write([]byte("Node\tDistance\tPrevious Node\n"))
+	writer := tabwriter.NewWriter(buf, 1, 5, 2, ' ',0)
+	writer.Write([]byte("Node\tDistance\tPrevious Node\t\n"))
 	for key, value := range dist {
 		writer.Write([]byte(key + "\t"))
 		writer.Write([]byte(strconv.FormatUint(uint64(value), 10) + "\t"))
-		writer.Write([]byte(prev[key] + "\n"))
+		writer.Write([]byte(prev[key] + "\t\n"))
 	}
 	writer.Flush()
 	return buf.String()
