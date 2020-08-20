@@ -25,12 +25,9 @@ func NewGraph() *Graph {
 }
 func (g *Graph) AddNodes(names ...string) {
 	for _, name := range names {
-		g.AddNode(name)
-	}
-}
-func (g *Graph) AddNode(name string) {
-	if _, ok := g.nodes[name]; !ok {
-		g.nodes[name] = &Node{Name: name, links: []Vertex{}}
+		if _, ok := g.nodes[name]; !ok {
+			g.nodes[name] = &Node{Name: name, links: []Vertex{}}
+		}
 	}
 }
 
