@@ -61,7 +61,6 @@ func SearchById(id string) (*MovieInfo, error) {
 	parms.Set("apikey", APIKEY)
 	parms.Set("i", id)
 	siteURL := "http://www.omdbapi.com/?" + parms.Encode()
-    println(siteURL)
 	body, err := sendGetRequest(siteURL)
 	if err != nil {
 		return nil, errors.New(err.Error() + "\nBody:" + body)
