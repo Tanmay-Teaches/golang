@@ -42,13 +42,11 @@ func (g *Graph) AddLink(a, b string, cost int) {
 
 }
 func (g *Graph) Dijkstra(source string) (map[string]uint, map[string]string) {
-	Q := []Edge{}
 	dist, prev := map[string]uint{}, map[string]string{}
-	//Add all the vertex
+
 	for _, node := range g.nodes {
 		dist[node.Name] = INFINITY
 		prev[node.Name] = ""
-		Q = append(Q, node.links...)
 	}
 	visited := map[string]bool{}
 	dist[source] = 0
