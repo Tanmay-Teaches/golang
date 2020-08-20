@@ -8,10 +8,10 @@ const INFINITY = ^uint(0)
 
 type Node struct {
 	Name  string
-	links []Vertex
+	links []Edge
 }
 
-type Vertex struct {
+type Edge struct {
 	from *Node
 	to   *Node
 	cost uint
@@ -26,7 +26,7 @@ func NewGraph() *Graph {
 func (g *Graph) AddNodes(names ...string) {
 	for _, name := range names {
 		if _, ok := g.nodes[name]; !ok {
-			g.nodes[name] = &Node{Name: name, links: []Vertex{}}
+			g.nodes[name] = &Node{Name: name, links: []Edge{}}
 		}
 	}
 }
@@ -36,13 +36,13 @@ func (g *Graph) AddLink(a, b string, cost int) {
 	aNode := g.nodes[a]
 	bNode := g.nodes[b]
 	//Link a to b
-	aNode.links = append(aNode.links, Vertex{from: aNode, to: bNode, cost: uint(cost)})
+	aNode.links = append(aNode.links, Edge{from: aNode, to: bNode, cost: uint(cost)})
 	//Link b to a
-	bNode.links = append(aNode.links, Vertex{from: bNode, to: aNode, cost: uint(cost)})
+	bNode.links = append(aNode.links, Edge{from: bNode, to: aNode, cost: uint(cost)})
 
 }
 func (g *Graph) Dijkstra(source string) (map[string]uint, map[string]string) {
-	Q := []Vertex{}
+	Q := []Edge{}
 	dist, prev := map[string]uint{}, map[string]string{}
 	//Add all the vertex
 	for _, node := range g.nodes {
