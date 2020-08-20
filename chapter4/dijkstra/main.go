@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"strconv"
 )
 
 const INFINITY = ^uint(0)
@@ -11,15 +9,6 @@ const INFINITY = ^uint(0)
 type Node struct {
 	Name  string
 	links []Vertex
-}
-
-func (node *Node) String() string {
-	buffer := bytes.Buffer{}
-	buffer.WriteString("Name: " + node.Name + "\tLinks: ")
-	for _, value := range node.links {
-		buffer.WriteString("(" + value.to.Name + "," + strconv.FormatUint(uint64(value.cost), 10) + ")" + ",")
-	}
-	return buffer.String()
 }
 
 type Vertex struct {
