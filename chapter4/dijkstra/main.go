@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"strconv"
+	"text/tabwriter"
 )
 
 const INFINITY = ^uint(0)
@@ -94,6 +97,18 @@ func main() {
 	g.AddLink("e", "c", 5)
 	g.AddLink("c", "b", 5)
 	dist, prev := g.Dijkstra("a")
-	fmt.Println(dist)
-	fmt.Println(prev)
+	fmt.Println(DijkstraString(dist, prev))
+}
+
+func DijkstraString(dist map[string]uint, prev map[string]string) string {
+	buf := &bytes.Buffer{}
+	writer := tabwriter.NewWriter(buf, 10, 10, 5, ' ', 0)
+	writer.Write([]byte("Node\tDistance\tPrevious Node\n"))
+	for key, value := range dist {
+		writer.Write([]byte(key + "\t"))
+		writer.Write([]byte(strconv.FormatUint(uint64(value), 10) + "\t"))
+		writer.Write([]byte(prev[key] + "\n"))
+	}
+	writer.Flush()
+	return buf.String()
 }
