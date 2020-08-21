@@ -2,14 +2,15 @@ package main
 
 import (
 	"crypto/sha256"
+	"flag"
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 	"net/url"
+	"os"
 	"runtime"
 	"strconv"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 var characterSet = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
@@ -18,48 +19,11 @@ var hashes = []int{}
 
 var CloseChan chan int
 
-func start(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	prefix := []byte(params["prefix"][0])
-	difficulty, _ := strconv.ParseInt(params["difficulty"][0], 10, 32)
-	CloseChan = make(chan int, 1)
-	if completion, ok := params["completionEndpoint"]; ok {
-		completion := completion[0]
-		go POWWithCallBack(prefix, int(difficulty), completion)
-	} else {
-		s := POW(prefix, int(difficulty))
-		if s == "" {
-			w.WriteHeader(http.StatusBadRequest)
-		} else {
-			w.WriteHeader(http.StatusOK)
-		}
-		w.Write([]byte(s))
-	}
-}
-
-func cancel(w http.ResponseWriter, r *http.Request) {
-	select {
-	case CloseChan <- 1:
-		w.WriteHeader(200)
-	case <-time.After(time.Second):
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("unable to cancel last request"))
-	}
-}
-
-func Router() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/start", start) // ?prefix=&difficulty=&completionEndpoint=
-	r.HandleFunc("/cancel", cancel)
-	return r
-}
-
-func main() {
-	http.ListenAndServe(":8080", Router())
-}
-
 func POWWithCallBack(prefix []byte, difficulty int, completionEndpoint string) {
 	solutionStr := POW(prefix, difficulty)
+	if solutionStr == "" {
+		return
+	}
 	v := url.Values{}
 	v.Set("solution", solutionStr)
 	_, err := http.Get(completionEndpoint + "?" + v.Encode())
@@ -172,4 +136,74 @@ func Hash(data []byte, bits int) bool {
 		}
 	}
 	return (bs[idx] >> (8 - nbits)) == 0
+}
+
+func start(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	prefix := []byte(params["prefix"][0])
+	difficulty, _ := strconv.ParseInt(params["difficulty"][0], 10, 32)
+	CloseChan = make(chan int, 1)
+	if completion, ok := params["completionEndpoint"]; ok {
+		completion := completion[0]
+		go POWWithCallBack(prefix, int(difficulty), completion)
+	} else {
+		s := POW(prefix, int(difficulty))
+		if s == "" {
+			w.WriteHeader(http.StatusBadRequest)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
+		w.Write([]byte(s))
+	}
+}
+
+func cancel(w http.ResponseWriter, r *http.Request) {
+	select {
+	case CloseChan <- 1:
+		w.WriteHeader(200)
+	case <-time.After(time.Second):
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("unable to cancel last request"))
+	}
+}
+
+func ping(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte(time.Now().String()))
+}
+
+func Router() *mux.Router {
+	r := mux.NewRouter()
+	r.HandleFunc("/start", start) // ?prefix=&difficulty=&completionEndpoint=
+	r.HandleFunc("/cancel", cancel)
+	r.HandleFunc("/health-check", ping)
+	return r
+}
+
+var port = flag.String("port", "8080", "The port number to listen")
+var masterNode = flag.String("master", "", "connect to a pool of workers")
+
+func pingMaster() {
+	hostname, err := os.Hostname()
+	if err != nil {
+		panic(err)
+	}
+	host := "http://" + hostname + ":" + (*port)
+	values := url.Values{}
+	values.Set("host", host)
+	parms := values.Encode()
+	for {
+		_, err = http.Get(*masterNode + "/add-worker?" + parms)
+		if err != nil {
+			panic(err)
+		}
+		time.Sleep(time.Minute)
+	}
+}
+
+func main() {
+	flag.Parse()
+	if masterNode != nil && len(*masterNode) > 0 {
+		go pingMaster()
+	}
+	http.ListenAndServe(":"+(*port), Router())
 }
