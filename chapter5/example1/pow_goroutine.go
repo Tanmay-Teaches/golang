@@ -29,7 +29,7 @@ func powWithGoRoutine(prefix string, bitLength int) {
 					return
 				case <-time.After(time.Nanosecond):
 					count := 0
-					for count < 1000 {
+					for count < 5000 {
 						count++
 						seed = RandomString(randomBytes, len(prefix), seed)
 						if Hash(randomBytes, bitLength) {
