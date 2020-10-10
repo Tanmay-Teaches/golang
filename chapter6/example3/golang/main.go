@@ -12,15 +12,13 @@ import (
 )
 
 func main() {
-	moves := C.nextBestMoves()
+	fmt.Println(nextBestMoves())
+}
 
+func nextBestMoves() []int {
+	moves := C.nextBestMoves()
 	size := int(*moves)
 	p := uintptr(unsafe.Pointer(moves)) + unsafe.Sizeof(size)
-	sh := &reflect.SliceHeader{
-		Data: p,
-		Len:  size,
-		Cap:  size,
-	}
-	data := *(*[]int)(unsafe.Pointer(sh))
-	fmt.Println(size, data)
+	sh := &reflect.SliceHeader{Data: p, Len: size, Cap: size}
+	return *(*[]int)(unsafe.Pointer(sh))
 }
