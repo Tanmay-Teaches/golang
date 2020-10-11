@@ -82,7 +82,8 @@ loop:
 		for y := 0; y < frame.hight; y++ {
 			for x := 0; x < frame.width; x++ {
 				if frame.broad[(y*frame.width)+x] != 0 {
-					setPoint(s, x, y)
+					setPoint(s, x*2, y)
+					setPoint(s, x*2+1, y)
 				}
 			}
 		}
