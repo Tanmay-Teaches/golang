@@ -14,14 +14,10 @@ import (
 	"reflect"
 	"time"
 	"unsafe"
-
 	"github.com/gdamore/tcell/v2"
 )
 
 func main() {
-	//noUi()
-	//os.Exit(0)
-
 	tcell.SetEncodingFallback(tcell.EncodingFallbackASCII)
 	s, e := tcell.NewScreen()
 	if e != nil {
@@ -65,7 +61,7 @@ loop:
 		select {
 		case <-quit:
 			break loop
-		case <-time.After(time.Millisecond * 10):
+		case <-time.After(time.Nanosecond):
 		}
 		s.Clear()
 
