@@ -737,10 +737,21 @@ public func playMove(move: Int) {
 }
 @_cdecl("renderFrame")
 public func renderFrame() -> UnsafeMutablePointer<Int> {
-    let x = [24, 10] + game.render().reduce([], +)
+    var x = [24, 10] + game.render().reduce([], +)
+    x.insert(x.count, at: 0)
     return x.withUnsafeBufferPointer { ptrToMoves -> UnsafeMutablePointer<Int> in
         let newMemory = UnsafeMutablePointer<Int>.allocate(capacity: x.count)
         memcpy(newMemory, x, x.count * MemoryLayout<Int>.size)
         return newMemory
     }
+}
+
+@_cdecl("lockGame")
+public func lockGame() -> Bool {
+    return game.lock()
+}
+
+@_cdecl("resetGame")
+public func resetGame() {
+    game = Tetris(width: 10, height: 24)
 }

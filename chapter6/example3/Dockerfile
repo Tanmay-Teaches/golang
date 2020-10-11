@@ -30,4 +30,5 @@ ENV GOROOT=/root/.go \
     PATH=/root/.go/bin:/root/go/bin:$PATH
 COPY golang/ swift/ code/
 
-RUN swiftc -O -Ounchecked -enforce-exclusivity=none -emit-library code/TWAI.swift && mv libTWAI.so /usr/lib/
+RUN swiftc -O -Ounchecked -enforce-exclusivity=none -emit-library code/TWAI.swift && mv libTWAI.so /usr/lib/ && cd code && go build .
+ENTRYPOINT ["/code/example"]
