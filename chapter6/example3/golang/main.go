@@ -81,7 +81,7 @@ loop:
 		frame := renderFrame()
 		for y := 0; y < frame.hight; y++ {
 			for x := 0; x < frame.width; x++ {
-				if frame.broad[(y*frame.width)+x] != 0 {
+				if frame.board[(y*frame.width)+x] != 0 {
 					setPoint(s, x*2, y)
 					setPoint(s, x*2+1, y)
 				}
@@ -117,7 +117,7 @@ func nextBestMoves() []int {
 }
 
 type Frame struct {
-	broad []int
+	board []int
 	width int
 	hight int
 }
@@ -131,7 +131,7 @@ func renderFrame() Frame {
 	sh := &reflect.SliceHeader{Data: p, Len: size, Cap: size}
 
 	return Frame{
-		broad: *(*[]int)(unsafe.Pointer(sh)),
+		board: *(*[]int)(unsafe.Pointer(sh)),
 		width: *(*int)(unsafe.Pointer(width)),
 		hight: *(*int)(unsafe.Pointer(hight)),
 	}
