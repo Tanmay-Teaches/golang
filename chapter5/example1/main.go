@@ -1,7 +1,7 @@
 package main
 
 func main() {
-	powSimple("Tanmay Bakshi + Omer Kamal", 24)
+	powSimple("Tanmay Bakshi + Baheer Kamal", 24)
 	println("\nGo routine:")
-	powWithGoRoutine("Tanmay Bakshi + Omer Kamal", 24)
+	powWithGoRoutine("Tanmay Bakshi + Baheer Kamal", 24)
 }
