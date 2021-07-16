@@ -1,12 +1,11 @@
 package main
 
 // #cgo LDFLAGS: -L. -lTWAI
-// #include <stdbool.h>
 // long *nextBestMoves();
 // void playMove(long move);
 // long *renderFrame();
-// void lockGame();
-// bool resetGame();
+// char lockGame();
+// void resetGame();
 import "C"
 import (
 	"fmt"
@@ -69,7 +68,9 @@ loop:
 			moves = nextBestMoves()
 			index = 0
 			if len(moves) == 0 {
-				C.lockGame()
+				if C.lockGame() == 0 {
+					break loop
+				}
 				moves = nextBestMoves()
 			}
 			if len(moves) == 0 {
@@ -99,7 +100,9 @@ func noUi() {
 			fmt.Println("Playing move:", move)
 			playNextMove(move)
 		}
-		C.lockGame()
+		if C.lockGame() == 0 {
+			break
+		}
 	}
 }
 
